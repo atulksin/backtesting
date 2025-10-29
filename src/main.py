@@ -17,4 +17,7 @@ print("Stock data saved to stock_data.csv")
 combined_data.to_csv('stock_data.csv')  
 print("Stock data saved to stock_data.csv")
 
+ticker_prices = combined_data.xs('Close', level=1, axis=1)
+ticker_returns = ticker_prices.pct_change().dropna()
+print(ticker_returns)
 
