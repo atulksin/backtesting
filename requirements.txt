@@ -1,4 +1,7 @@
-backtesting
-pandas
-yfinance
-
+numpy>=2.3.0
+pandas>=2.3.0
+yfinance>=0.2.66
+matplotlib>=3.10.0
+pytest>=7.0.0
+pytest-mock>=3.10.0
+pytest-cov>=4.0.0
