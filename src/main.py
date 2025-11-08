@@ -1,5 +1,8 @@
 from src.data_loader import DataLoader
 from strategies.sma_crossover import SMACrossoverStrategy
+from src.visualizer import AdvancedVisualizer
+from src.interactive_viz import InteractiveVisualizer
+from src.risk_analyzer import RiskAnalyzer
 import matplotlib.pyplot as plt
 import pandas as pd
 import os
@@ -40,7 +43,36 @@ def run_backtest(symbol: str, start_date: str = None, end_date: str = None,
         for metric, value in metrics.items():
             print(f"{metric}: {value:.2f}")
             
-        # Plot results
+        # Create advanced visualizations
+        visualizer = AdvancedVisualizer()
+        interactive_viz = InteractiveVisualizer()
+        risk_analyzer = RiskAnalyzer()
+        
+        # Create comprehensive dashboard
+        dashboard_path = f"plots/{symbol}_dashboard.png"
+        visualizer.create_comprehensive_dashboard(results, symbol, metrics, dashboard_path)
+        
+        # Create interactive dashboard
+        interactive_path = f"plots/{symbol}_interactive.html"
+        interactive_viz.create_interactive_dashboard(results, symbol, metrics, interactive_path)
+        
+        # Create risk analysis
+        risk_path = f"plots/{symbol}_risk_analysis.png"
+        risk_metrics = risk_analyzer.comprehensive_risk_analysis(results, symbol, save_path=risk_path)
+        
+        # Print risk metrics
+        print(f"\nRisk Analysis for {symbol}:")
+        print("-" * 30)
+        for metric, value in risk_metrics.items():
+            if isinstance(value, float):
+                if '%' in metric or 'Ratio' in metric:
+                    print(f"{metric}: {value:.4f}")
+                else:
+                    print(f"{metric}: {value:.6f}")
+            else:
+                print(f"{metric}: {value}")
+        
+        # Also create traditional plot for compatibility
         plot_results(results, symbol)
         
         # Save results
@@ -126,6 +158,21 @@ def run_multiple_symbols(symbols: list, **kwargs) -> dict:
                 'data': result,
                 'metrics': metrics
             }
+    
+    # Create comparison visualizations if we have multiple results
+    if len(results) > 1:
+        print(f"\nCreating comparison visualizations...")
+        
+        # Static comparison chart
+        visualizer = AdvancedVisualizer()
+        comparison_path = "plots/multi_symbol_comparison.png"
+        visualizer.create_comparison_chart(results, comparison_path)
+        print(f"Comparison chart saved to: {comparison_path}")
+        
+        # Interactive performance heatmap
+        interactive_viz = InteractiveVisualizer()
+        heatmap_path = "plots/performance_heatmap.html"
+        interactive_viz.create_performance_heatmap(results, heatmap_path)
     
     return results
 
